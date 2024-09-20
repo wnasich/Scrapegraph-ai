@@ -48,6 +48,7 @@ class SearchInternetNode(BaseNode):
         )
         self.max_results = node_config.get("max_results", 3)
         self.search_query = node_config.get("search_query", None)
+        self.search_api_key = node_config.get("search_api_key", None)
 
     def execute(self, state: dict) -> dict:
         """
@@ -78,29 +79,32 @@ class SearchInternetNode(BaseNode):
 
         output_parser = CommaSeparatedListOutputParser()
 
-        search_prompt = PromptTemplate(
-            template=TEMPLATE_SEARCH_INTERNET,
-            input_variables=["user_prompt"],
-        )
-
-        search_answer = search_prompt | self.llm_model | output_parser
-
-        if isinstance(self.llm_model, ChatOllama) and self.llm_model.format == 'json':
-            self.llm_model.format = None
-            search_query = search_answer.invoke({"user_prompt": user_prompt})[0]
-            self.llm_model.format = 'json'
+        if self.search_query:
+            search_query = self.search_query
         else:
-            search_query = search_answer.invoke({"user_prompt": user_prompt})[0]
+            search_prompt = PromptTemplate(
+                template=TEMPLATE_SEARCH_INTERNET,
+                input_variables=["user_prompt"],
+            )
+
+            search_answer = search_prompt | self.llm_model | output_parser
+
+            if isinstance(self.llm_model, ChatOllama) and self.llm_model.format == 'json':
+                self.llm_model.format = None
+                search_query = search_answer.invoke({"user_prompt": user_prompt})[0]
+                self.llm_model.format = 'json'
+            else:
+                search_query = search_answer.invoke({"user_prompt": user_prompt})[0]
 
         self.logger.info(f"Search Query: {search_query}")
 
         answer = search_on_web(query=search_query, max_results=self.max_results,
-                               search_engine=self.search_engine)
+                               search_engine=self.search_engine, search_api_key=self.search_api_key)
 
         if len(answer) == 0:
             # remove 'inbody:' from search_query
             search_query = search_query.replace('inbody:', '')
-            answer = search_on_web(query=search_query, max_results=self.max_results, search_engine=self.search_engine)
+            answer = search_on_web(query=search_query, max_results=self.max_results, search_engine=self.search_engine, search_api_key=self.search_api_key)
 
         if len(answer) == 0:
             # raise an exception if no answer is found

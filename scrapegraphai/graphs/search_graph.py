@@ -76,7 +76,8 @@ class SearchGraph(AbstractGraph):
                 "llm_model": self.llm_model,
                 "max_results": self.max_results,
                 "search_engine": self.copy_config.get("search_engine"),
-                "search_query": self.copy_config.get("search_query", None)
+                "search_query": self.copy_config.get("search_query", None),
+                "search_api_key": self.copy_config.get("search_api_key", None)
             }
         )
         graph_iterator_node = GraphIteratorNode(

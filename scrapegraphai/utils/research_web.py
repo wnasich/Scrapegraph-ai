@@ -8,8 +8,8 @@ from googlesearch import search as google_search
 import requests
 from bs4 import BeautifulSoup
 
-def search_on_web(query: str, search_engine: str = "Google", 
-                  max_results: int = 10, port: int = 8080) -> List[str]:
+def search_on_web(query: str, search_engine: str = "Google",
+                  max_results: int = 10, port: int = 8080, search_api_key: str = None) -> List[str]:
     """
     Searches the web for a given query using specified search engine options.
 
@@ -60,9 +60,8 @@ def search_on_web(query: str, search_engine: str = "Google",
 
     elif search_engine.lower() == "bing-api":
 
-        azureBingSearchKey='???????????????????????'
         headers = {
-            "Ocp-Apim-Subscription-Key": azureBingSearchKey
+            "Ocp-Apim-Subscription-Key": search_api_key,
         }
 
         params = {
