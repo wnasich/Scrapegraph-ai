@@ -3,6 +3,7 @@ __init__.py file for node folder
 """
 
 from .base_node import BaseNode
+from .best_answer_node import BestAnswerNode
 from .fetch_node import FetchNode
 from .get_probable_tags_node import GetProbableTagsNode
 from .generate_answer_node import GenerateAnswerNode

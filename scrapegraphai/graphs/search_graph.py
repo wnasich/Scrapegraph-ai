@@ -2,7 +2,7 @@
 SearchGraph Module
 """
 
-from copy import deepcopy
+from copy import copy, deepcopy
 from typing import Optional, List
 from pydantic import BaseModel
 
@@ -13,7 +13,7 @@ from .smart_scraper_graph import SmartScraperGraph
 from ..nodes import (
     SearchInternetNode,
     GraphIteratorNode,
-    MergeAnswersNode
+    BestAnswerNode
 )
 from ..utils.copy import safe_deepcopy
 
@@ -75,7 +75,8 @@ class SearchGraph(AbstractGraph):
             node_config={
                 "llm_model": self.llm_model,
                 "max_results": self.max_results,
-                "search_engine": self.copy_config.get("search_engine")
+                "search_engine": self.copy_config.get("search_engine"),
+                "search_query": self.copy_config.get("search_query", None)
             }
         )
         graph_iterator_node = GraphIteratorNode(
@@ -88,7 +89,7 @@ class SearchGraph(AbstractGraph):
             schema=self.copy_schema
         )
 
-        merge_answers_node = MergeAnswersNode(
+        best_answer_node = BestAnswerNode(
             input="user_prompt & results",
             output=["answer"],
             node_config={
@@ -101,11 +102,11 @@ class SearchGraph(AbstractGraph):
             nodes=[
                 search_internet_node,
                 graph_iterator_node,
-                merge_answers_node
+                best_answer_node
             ],
             edges=[
                 (search_internet_node, graph_iterator_node),
-                (graph_iterator_node, merge_answers_node)
+                (graph_iterator_node, best_answer_node)
             ],
             entry_point=search_internet_node,
             graph_name=self.__class__.__name__

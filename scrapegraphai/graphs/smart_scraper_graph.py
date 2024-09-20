@@ -113,4 +113,8 @@ class SmartScraperGraph(AbstractGraph):
         inputs = {"user_prompt": self.prompt, self.input_key: self.source}
         self.final_state, self.execution_info = self.graph.execute(inputs)
 
-        return self.final_state.get("answer", "No answer found.")
+        answer = self.final_state.get("answer", "No answer found.")
+        # Inject source_url in the answer
+        answer['source_url'] = self.source
+
+        return answer

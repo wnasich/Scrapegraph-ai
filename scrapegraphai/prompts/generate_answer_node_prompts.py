@@ -73,3 +73,11 @@ Output instructions: {format_instructions}\n
 User question: {question}\n
 Website content: {context}\n 
 """
+
+TEMPLATE_DATA_EXTRACTION  = """
+You are a website scraper, and you have just scraped the content provided below from a website.\n
+Ensure that the output is in JSON format and is error-free.\n
+**Output instructions:** {format_instructions}\n
+**Extraction Instructions:** {question}\n
+**Website content:** {context}\n
+"""

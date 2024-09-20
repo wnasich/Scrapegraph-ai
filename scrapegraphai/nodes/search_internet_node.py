@@ -47,6 +47,7 @@ class SearchInternetNode(BaseNode):
             else "google"
         )
         self.max_results = node_config.get("max_results", 3)
+        self.search_query = node_config.get("search_query", None)
 
     def execute(self, state: dict) -> dict:
         """
@@ -97,6 +98,12 @@ class SearchInternetNode(BaseNode):
                                search_engine=self.search_engine)
 
         if len(answer) == 0:
+            # remove 'inbody:' from search_query
+            search_query = search_query.replace('inbody:', '')
+            answer = search_on_web(query=search_query, max_results=self.max_results, search_engine=self.search_engine)
+
+        if len(answer) == 0:
+            # raise an exception if no answer is found
             raise ValueError("Zero results found for the search query.")
 
         state.update({self.output[0]: answer})

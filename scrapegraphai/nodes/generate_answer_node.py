@@ -14,7 +14,7 @@ from ..utils.output_parser import get_structured_output_parser, get_pydantic_out
 from ..prompts import (TEMPLATE_CHUNKS,
                        TEMPLATE_NO_CHUNKS, TEMPLATE_MERGE,
                        TEMPLATE_CHUNKS_MD, TEMPLATE_NO_CHUNKS_MD,
-                       TEMPLATE_MERGE_MD)
+                       TEMPLATE_MERGE_MD, TEMPLATE_DATA_EXTRACTION)
 
 class GenerateAnswerNode(BaseNode):
     """
@@ -119,6 +119,9 @@ class GenerateAnswerNode(BaseNode):
             template_no_chunks_prompt  = self.additional_info + template_no_chunks_prompt
             template_chunks_prompt  = self.additional_info + template_chunks_prompt
             template_merge_prompt  = self.additional_info + template_merge_prompt
+
+        # Override the prompt
+        template_no_chunks_prompt  = TEMPLATE_DATA_EXTRACTION
 
         if len(doc) == 1:
             prompt = PromptTemplate(

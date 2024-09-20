@@ -58,6 +58,41 @@ def search_on_web(query: str, search_engine: str = "Google",
             search_results.append(link)
         return search_results
 
+    elif search_engine.lower() == "bing-api":
+
+        azureBingSearchKey='???????????????????????'
+        headers = {
+            "Ocp-Apim-Subscription-Key": azureBingSearchKey
+        }
+
+        params = {
+            'mkt': 'en-CA',
+            'setLang': 'en-CA',
+            'responseFilter': 'Webpages',
+            'count': max_results,
+            'q': query,
+        }
+
+        response = requests.get('https://api.bing.microsoft.com/v7.0/search', headers=headers, params=params)
+        response.raise_for_status()
+        search_results = response.json()
+
+        urls = []
+        if 'webPages' in search_results:
+            actualUrls = []
+            for value in search_results['webPages']['value']:
+                if 'url' in value:
+                    urls.append(value['url'])
+
+                if 'cachedPageUrl' in value:
+                    urls.append(value['cachedPageUrl'])
+
+                actualUrls.append(value['url'])
+
+            print(actualUrls)
+
+        return urls
+
     elif search_engine.lower() == "searxng":
         url = f"http://localhost:{port}"
         params = {"q": query, "format": "json"}

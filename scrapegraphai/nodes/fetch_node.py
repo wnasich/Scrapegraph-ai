@@ -307,14 +307,15 @@ class FetchNode(BaseNode):
                                  the document fetched by ChromiumLoader.""")
             parsed_content = document[0].page_content
 
-            if (isinstance(self.llm_model, ChatOpenAI) \
-                or isinstance(self.llm_model, AzureChatOpenAI)) \
-                and not self.script_creator or self.force \
-                and not self.script_creator and not self.openai_md_enabled:
-                parsed_content = convert_to_md(document[0].page_content, parsed_content)
+            # Never convert to Markdown
+            # if (isinstance(self.llm_model, ChatOpenAI) \
+            #     or isinstance(self.llm_model, AzureChatOpenAI)) \
+            #     and not self.script_creator or self.force \
+            #     and not self.script_creator and not self.openai_md_enabled:
+            #     parsed_content = convert_to_md(document[0].page_content, parsed_content)
 
             compressed_document = [
-                Document(page_content=parsed_content, metadata={"source": "html file"})
+                Document(page_content=parsed_content, metadata={"source": source})
             ]
 
         return self.update_state(state, compressed_document)
